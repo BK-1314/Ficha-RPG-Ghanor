@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Bokor&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bokor&family=Calistoga&display=swap');
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 100%;
+    background-color: #F1EADD;
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    background-color: #F1EADD;
+    padding: 12px;
+
+}
+
+.logo_header {
+    height: 70px;
+    
+}
+
+.nav_header {  
+    display: flex;
+    gap: 32px;
+}
+
+.nav_link {
+    font-family: 'Calistoga';
+    font-size: 20px;
+    color: #3B6269;
+}
+
+.content{
+    border-top: 1px solid #851719;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.content_personagem{
+    margin-top: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+.personagem_info{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.personagem_img{
+    height: 250px;
+    border: 12px solid transparent;
+    border-image-source:url('img/Moldura Foto Personagem.png');
+    border-image-slice: 14;
+}
