@@ -505,6 +505,7 @@ Rode `uv run pytest tests/dominio -v` obsessivamente. Sem banco, os testes rodam
 
 ```python
 """Atributos de personagem — Value Object imutável."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
@@ -555,6 +556,7 @@ class ConjuntoDeAtributos:
 
 ```python
 """Efeitos de escolhas de criação (raça, classe, origem...) sobre a ficha."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -580,9 +582,7 @@ class ModificadorDeAtributo:
         return atributos.com_modificador(self.atributo, self.delta)
 
 
-def aplicar_todos(
-    atributos: ConjuntoDeAtributos, efeitos: list[Efeito]
-) -> ConjuntoDeAtributos:
+def aplicar_todos(atributos: ConjuntoDeAtributos, efeitos: list[Efeito]) -> ConjuntoDeAtributos:
     for efeito in efeitos:
         atributos = efeito.aplicar(atributos)
     return atributos
@@ -592,6 +592,7 @@ def aplicar_todos(
 
 ```python
 """Máquina de estados da criação de personagem — os 8 passos do Tormenta 20."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -634,9 +635,7 @@ class FichaEmCriacao:
 
     def _exigir_passo(self, passo: Passo) -> None:
         if passo != self.passo_atual:
-            raise PassoForaDeOrdem(
-                f"Passo atual é {self.passo_atual.name}, tentou {passo.name}"
-            )
+            raise PassoForaDeOrdem(f"Passo atual é {self.passo_atual.name}, tentou {passo.name}")
 
     def definir_atributos(self, atributos: ConjuntoDeAtributos) -> None:
         self._exigir_passo(Passo.ATRIBUTOS)
@@ -856,8 +855,7 @@ class Personagem(models.Model):
     classe = models.ForeignKey(Classe, null=True, on_delete=models.PROTECT)
     magias = models.ManyToManyField(Magia, blank=True)
     nivel = models.PositiveSmallIntegerField(default=1)
-    status = models.CharField(max_length=20, choices=Status.choices,
-                              default=Status.EM_CRIACAO)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.EM_CRIACAO)
 
     # Semiestruturado: o "corpo" da ficha → JSONB
     # {"atributos": {"FOR": 2, ...}, "pv": {"atual": 18, "max": 20},
@@ -1065,10 +1063,12 @@ from regras.models import Magia
 
 @pytest.mark.django_db
 def test_lista_magias_filtrando_por_circulo() -> None:
-    Magia.objects.create(nome="Luz", circulo=1, escola="Evocação", custo_pm=1,
-                         descricao="Cria luz.")
-    Magia.objects.create(nome="Bola de Fogo", circulo=3, escola="Evocação",
-                         custo_pm=6, descricao="BOOM.")
+    Magia.objects.create(
+        nome="Luz", circulo=1, escola="Evocação", custo_pm=1, descricao="Cria luz."
+    )
+    Magia.objects.create(
+        nome="Bola de Fogo", circulo=3, escola="Evocação", custo_pm=6, descricao="BOOM."
+    )
     client = APIClient()
 
     resposta = client.get("/api/v1/magias/", {"circulo": 1})
@@ -1212,8 +1212,7 @@ from fichas.models import Personagem
 
 @login_required
 def buscar_magias(request, personagem_id: int):
-    personagem = get_object_or_404(Personagem, id=personagem_id,
-                                   jogador=request.user)
+    personagem = get_object_or_404(Personagem, id=personagem_id, jogador=request.user)
     consulta = request.GET.get("q", "").strip()
     magias = personagem.magias.filter(nome__icontains=consulta) if consulta else []
     return render(request, "fichas/_resultados_magias.html", {"magias": magias})
@@ -1238,11 +1237,10 @@ def buscar_magias(request, personagem_id: int):
 ```python
 @login_required
 def aplicar_dano(request, personagem_id: int):
-    personagem = get_object_or_404(Personagem, id=personagem_id,
-                                   jogador=request.user)
+    personagem = get_object_or_404(Personagem, id=personagem_id, jogador=request.user)
     quantidade = int(request.POST["quantidade"])
     pv = personagem.dados["pv"]
-    pv["atual"] = max(0, pv["atual"] - quantidade)   # regra simples aqui;
+    pv["atual"] = max(0, pv["atual"] - quantidade)  # regra simples aqui;
     personagem.save(update_fields=["dados", "atualizado_em"])  # regras complexas → dominio/
     return render(request, "fichas/_pv_display.html", {"personagem": personagem})
 ```
@@ -1315,7 +1313,9 @@ def _efeitos_da_raca(raca: Raca) -> list:
 @login_required
 def wizard_escolher_raca(request, personagem_id: int):
     personagem = get_object_or_404(
-        Personagem, id=personagem_id, jogador=request.user,
+        Personagem,
+        id=personagem_id,
+        jogador=request.user,
         status=Personagem.Status.EM_CRIACAO,
     )
     ficha = FichaEmCriacao.de_dict(personagem.criacao)
@@ -1325,17 +1325,22 @@ def wizard_escolher_raca(request, personagem_id: int):
         try:
             ficha.escolher_raca(raca.nome, efeitos=_efeitos_da_raca(raca))
         except PassoForaDeOrdem:
-            return render(request, "fichas/_erro_wizard.html",
-                          {"mensagem": "Complete o passo anterior primeiro."},
-                          status=409)
+            return render(
+                request,
+                "fichas/_erro_wizard.html",
+                {"mensagem": "Complete o passo anterior primeiro."},
+                status=409,
+            )
         personagem.raca = raca
         personagem.criacao = ficha.para_dict()
         personagem.save(update_fields=["raca", "criacao", "atualizado_em"])
-        return render(request, "fichas/_passo_classe.html",
-                      {"personagem": personagem, "ficha": ficha})
+        return render(
+            request, "fichas/_passo_classe.html", {"personagem": personagem, "ficha": ficha}
+        )
 
-    return render(request, "fichas/_passo_raca.html",
-                  {"personagem": personagem, "racas": Raca.objects.all()})
+    return render(
+        request, "fichas/_passo_raca.html", {"personagem": personagem, "racas": Raca.objects.all()}
+    )
 ```
 
 ### `_passo_raca.html`
@@ -1399,6 +1404,7 @@ O `select_for_update` faz o segundo acesso esperar o primeiro terminar. É a int
 
 ```python
 """Regras de subida de nível."""
+
 from dataclasses import dataclass
 
 
@@ -1409,8 +1415,9 @@ class GanhosDeNivel:
     novo_nivel: int
 
 
-def subir_de_nivel(nivel_atual: int, pv_por_nivel: int, pm_por_nivel: int,
-                   mod_constituicao: int) -> GanhosDeNivel:
+def subir_de_nivel(
+    nivel_atual: int, pv_por_nivel: int, pm_por_nivel: int, mod_constituicao: int
+) -> GanhosDeNivel:
     """Tormenta 20: PV por nível = valor da classe + mod. de Constituição."""
     if nivel_atual >= 20:
         raise ValueError("Nível máximo (20) já alcançado")
@@ -1430,8 +1437,7 @@ from ghanor_codex.dominio.progressao import subir_de_nivel
 
 
 def test_guerreiro_con_2_ganha_pv_da_classe_mais_constituicao() -> None:
-    ganhos = subir_de_nivel(nivel_atual=1, pv_por_nivel=5, pm_por_nivel=3,
-                            mod_constituicao=2)
+    ganhos = subir_de_nivel(nivel_atual=1, pv_por_nivel=5, pm_por_nivel=3, mod_constituicao=2)
     assert ganhos.pv_maximo_extra == 7
     assert ganhos.novo_nivel == 2
 
@@ -1470,11 +1476,10 @@ from fichas.models import Personagem
 
 class Campanha(models.Model):
     nome = models.CharField(max_length=100)
-    mestre = models.ForeignKey(settings.AUTH_USER_MODEL,
-                               on_delete=models.CASCADE,
-                               related_name="campanhas_mestradas")
-    personagens = models.ManyToManyField(Personagem, blank=True,
-                                         related_name="campanhas")
+    mestre = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="campanhas_mestradas"
+    )
+    personagens = models.ManyToManyField(Personagem, blank=True, related_name="campanhas")
     descricao = models.TextField(blank=True)
 
     def __str__(self) -> str:
@@ -1482,8 +1487,7 @@ class Campanha(models.Model):
 
 
 class Sessao(models.Model):
-    campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE,
-                                 related_name="sessoes")
+    campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE, related_name="sessoes")
     numero = models.PositiveSmallIntegerField()
     data = models.DateField()
     resumo = models.TextField(blank=True)
