@@ -1,20 +1,34 @@
-Projeto de Ficha de RPG de Ghanor
-# Ficha de RPG - A Lenda de Ghanor
+# ⚔️ Ghanor Codex
 
-## Descrição
-Este projeto consiste em uma aplicação Python para criar e gerenciar fichas de personagem para o RPG "A Lenda de Ghanor". A ferramenta permite aos jogadores criarem, editarem e salvarem fichas de personagem de forma digital.
+Gerenciador de fichas e campanhas para **A Lenda de Ghanor RPG** (Tormenta 20).
 
-## Funcionalidades
-- Criação de nova ficha de personagem
-- Edição de atributos e características
-- Cálculo automático de modificadores
-- Gerenciamento de inventário
-- Salvamento e carregamento de fichas
-- Interface intuitiva e amigável
+![CI](https://github.com/SEU_USUARIO/ghanor-codex/actions/workflows/ci.yml/badge.svg)
 
-## Requisitos
-- Python 3.8 ou superior
-- Bibliotecas necessárias listadas em `requirements.txt`
+## O que ele faz
 
-## Instalação
-1. Clone o repositório:
+- 🧙 Criação guiada de fichas: raça, classe e origem alteram atributos
+  automaticamente (elfo → +2 Carisma), seguindo os 8 passos do Tormenta 20
+- ❤️ Gestão em sessão: PV, PM, inventário, condições, subida de nível
+- 📚 Consulta instantânea de magias e habilidades da ficha
+- 🗺️ Organização de campanhas e sessões
+
+## Stack
+
+Django 5 · DRF · HTMX · Alpine.js · Tailwind · PostgreSQL 16 (JSONB) ·
+Docker Compose · Caddy — decisões documentadas em [`docs/adr/`](docs/adr/).
+
+## Rodando localmente
+
+​```bash
+cp .env.example .env   # preencha as variáveis
+docker compose up -d db
+uv sync
+uv run manage.py migrate
+uv run manage.py runserver
+​```
+
+## Testes
+
+​```bash
+uv run pytest
+​```
