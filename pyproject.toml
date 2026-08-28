@@ -1,0 +1,38 @@
+[project]
+name = "ficha-rpg-ghanor"
+version = "0.1.0"
+description = "Gerenciador de fichas e campanhas para A Lenda de Ghanor RPG"
+readme = "README.md"
+authors = [
+    { name = "Bruno Kiyota", email = "bruno.kiyota@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.1",
+]
+
+[project.scripts]
+ficha-rpg-ghanor = "ficha_rpg_ghanor:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-django>=4.14.0",
+    "ruff>=0.16.5",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "ghanor_codex.settings"
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]  # erros, imports, modernização, bugs comuns

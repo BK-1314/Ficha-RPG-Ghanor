@@ -2,7 +2,7 @@
 
 Gerenciador de fichas e campanhas para **A Lenda de Ghanor RPG** (Tormenta 20).
 
-![CI](https://github.com/SEU_USUARIO/ghanor-codex/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/BK-1314/ghanor-codex/actions/workflows/ci.yml/badge.svg)
 
 ## O que ele faz
 
